@@ -30,6 +30,7 @@ export class MovieListComponent implements OnInit {
   }
 
   updateMovie(event: any): void {
+    console.log(event)
     this.movies[event.index] = event.data;
   }
 }

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogClose } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { Movie } from '../models/movie.model';
 
 @Component({
   selector: 'app-edit-movie-dialog',
@@ -13,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 export class EditMovieDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<EditMovieDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: Movie
   ) {}
 
   onNoClick(): void {
