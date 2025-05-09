@@ -1,0 +1,2 @@
+export default `*{margin:0;padding:0;box-sizing:border-box}html,body{font-family:Roboto,sans-serif;background-color:#f5f5f5;color:#333;height:100%}.container{margin:0 auto;padding:1rem}
+`;
