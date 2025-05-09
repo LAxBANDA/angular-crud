@@ -1,16 +1,16 @@
-<h1 mat-dialog-title>Editar Película</h1>
-<div mat-dialog-content>
-  <mat-form-field class="full-width">
+<h1 mat-dialog-title class="edit-movie-dialog-title">Editar Película</h1>
+<div mat-dialog-content class="edit-movie-dialog-content">
+  <mat-form-field class="edit-movie-dialog-form-field">
     <mat-label>Título</mat-label>
     <input matInput [(ngModel)]="data.primaryTitle">
   </mat-form-field>
 
-  <mat-form-field class="full-width">
+  <mat-form-field class="edit-movie-dialog-form-field">
     <mat-label>Descripción</mat-label>
     <textarea matInput rows="4" [(ngModel)]="data.description"></textarea>
   </mat-form-field>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions class="edit-movie-dialog-actions">
   <button mat-button (click)="onNoClick()">Cancelar</button>
-  <button mat-button [mat-dialog-close]="data">Guardar</button>
+  <button mat-button color="primary" [mat-dialog-close]="data">Guardar</button>
 </div>

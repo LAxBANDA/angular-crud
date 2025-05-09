@@ -1,0 +1,26 @@
+.edit-movie-dialog-container {
+  width: 400px; /* Adjust as needed */
+}
+
+.edit-movie-dialog-title {
+  font-size: 1.5em;
+  margin-bottom: 16px;
+  color: var(--primary-color); /* Use primary color */
+}
+
+.edit-movie-dialog-content {
+  margin-bottom: 24px;
+}
+
+.edit-movie-dialog-form-field {
+  width: 100%;
+}
+
+.edit-movie-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.edit-movie-dialog-actions button {
+  margin-left: 8px;
+}
