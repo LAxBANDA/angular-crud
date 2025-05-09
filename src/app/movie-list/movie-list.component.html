@@ -3,8 +3,8 @@
     <app-movie-details
       [movie]="movie"
       [index]="i"
-      (remove)="removeMovie($event)"
-      (edit)="updateMovie($event)">
+      (remove)="deleteMovie(i)"
+      (edit)="editMovie($event)">
     </app-movie-details>
   </div>
 </div>

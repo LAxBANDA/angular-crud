@@ -15,8 +15,8 @@ import { Movie } from '../models/movie.model';
 export class MovieDetailsComponent {
   @Input() movie!: Movie;
   @Input() index!: number;
-  @Output() remove = new EventEmitter<number>();
-  @Output() edit = new EventEmitter<{ index: number; data: Movie }>();
+  @Output() remove = new EventEmitter();
+  @Output() edit = new EventEmitter<Movie>();
 
   constructor(private dialog: MatDialog) {}
 
@@ -26,14 +26,14 @@ export class MovieDetailsComponent {
       data: { ...this.movie }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: Movie) => {
       if (result) {
-        this.edit.emit({ index: this.index, data: result });
+        this.edit.emit(result);
       }
     });
   }
 
   onDelete(): void {
-    this.remove.emit(this.index);
+    this.remove.emit();
   }
 }

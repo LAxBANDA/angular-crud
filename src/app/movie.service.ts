@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, timer } from 'rxjs';
-import { switchMap, tap, shareReplay } from 'rxjs/operators';
+import { switchMap, map, shareReplay } from 'rxjs/operators';
 import { Movie } from './models/movie.model';
 
 export type IMDBApiMoviesResponse = Movie[];
 
-@Injectable({
-  providedIn: 'root',
-})
+interface LocalStorageMovies {
+  edited: Movie[];
+  deleted: string[];
+}
+
+@Injectable({ providedIn: 'root' })
 export class MovieService {
   private readonly url = 'https://imdb236.p.rapidapi.com/imdb/lowest-rated-movies';
   private readonly headers = new HttpHeaders({
@@ -16,69 +19,73 @@ export class MovieService {
     'x-rapidapi-host': 'imdb236.p.rapidapi.com',
   });
 
-  private cache$: Observable<any> | null = null;
+  private cache$: Observable<IMDBApiMoviesResponse> | null = null;
+  private readonly localKey = 'movies';
 
   constructor(private http: HttpClient) {}
 
-  // Obtiene las películas de la API y las fusiona con las películas modificadas en localStorage
   getMovies(): Observable<IMDBApiMoviesResponse> {
-    if (this.cache$) {
-      return this.cache$;
-    }
+    if (this.cache$) return this.cache$;
 
     this.cache$ = timer(300).pipe(
-      switchMap(() =>
-        this.http.get<IMDBApiMoviesResponse>(this.url, { headers: this.headers })
-    ),
-    tap((movies: IMDBApiMoviesResponse) => {
-      // Obtenemos las películas modificadas de localStorage
-      const modifiedMovies = this.getModifiedMovies();
+      switchMap(() => this.http.get<IMDBApiMoviesResponse>(this.url, { headers: this.headers })),
+      map(apiMovies => this.mergeWithLocalChanges(apiMovies)),
+      shareReplay(1)
+    );
 
-      // Combinamos las películas de la API con las modificadas
-      this.cacheMovies(movies, modifiedMovies);
-    }),
-    shareReplay(1)
-  );
-
-  return this.cache$;
-}
-
-// Guarda en localStorage las películas modificadas
-cacheMovies(movies: IMDBApiMoviesResponse, modifiedMovies: IMDBApiMoviesResponse): void {
-  const allMovies = [...movies, ...modifiedMovies];
-  localStorage.setItem('movies', JSON.stringify(allMovies));
-}
-
-// Obtiene las películas modificadas de localStorage
-getModifiedMovies(): IMDBApiMoviesResponse {
-  const storedMovies = localStorage.getItem('movies');
-  if (storedMovies) {
-    return JSON.parse(storedMovies);
+    return this.cache$;
   }
 
-  return [];
-}
+  private mergeWithLocalChanges(apiMovies: Movie[]): Movie[] {
+    const local = this.getLocalData();
 
-// Elimina una película modificada de localStorage
-removeMovieFromStorage(index: number): void {
-  const movies = this.getModifiedMovies();
-  if (movies && movies.length > index) {
-    movies.splice(index, 1);
-    localStorage.setItem('movies', JSON.stringify(movies));
+    // Filtrar películas eliminadas
+    const filtered = apiMovies.filter(movie => !local.deleted.includes(movie.id));
+
+    // Reemplazar películas editadas
+    const editedMap = new Map(local.edited.map(m => [m.id, m]));
+    return filtered.map(movie =>
+      editedMap.has(movie.id) ? { ...movie, ...editedMap.get(movie.id)! } : movie
+    );
   }
-}
 
-// Actualiza una película en localStorage
-updateMovieInStorage(index: number, updatedMovie: Movie): void {
-  const movies = this.getModifiedMovies();
-  if (movies && movies.length > index) {
-    movies[index] = updatedMovie;
-    localStorage.setItem('movies', JSON.stringify(movies));
+  updateMovie(updatedMovie: Movie): void {
+    const local = this.getLocalData();
+    const index = local.edited.findIndex(m => m.id === updatedMovie.id);
+
+    if (index >= 0) {
+      local.edited[index] = updatedMovie;
+    } else {
+      local.edited.push(updatedMovie);
+    }
+
+    this.saveLocalData(local);
+    this.clearCache();
   }
-}
 
-// Limpia el caché en el servicio
-clearCache() {
-  this.cache$ = null;
-}
+  deleteMovie(id: string): void {
+    const local = this.getLocalData();
+
+    if (!local.deleted.includes(id)) {
+      local.deleted.push(id);
+      // También eliminar de editados si existe
+      local.edited = local.edited.filter(m => m.id !== id);
+    }
+
+    this.saveLocalData(local);
+    this.clearCache();
+  }
+
+  private getLocalData(): LocalStorageMovies {
+    const raw = localStorage.getItem(this.localKey);
+    return raw ? JSON.parse(raw) : { edited: [], deleted: [] };
+  }
+
+  private saveLocalData(data: LocalStorageMovies): void {
+    localStorage.setItem(this.localKey, JSON.stringify(data));
+  }
+
+  clearCache(): void {
+    this.cache$ = null;
+  }
 }

@@ -1,36 +1,45 @@
 import { Component, OnInit } from '@angular/core';
 import { MovieService } from '../movie.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Movie } from '../models/movie.model';
+import { EditMovieDialogComponent } from '../edit-movie-dialog/edit-movie-dialog.component';
 import { MovieDetailsComponent } from '../movie-details/movie-details.component';
 import { CommonModule } from '@angular/common';
-import { Movie } from '../models/movie.model';
 
 @Component({
   selector: 'app-movie-list',
   templateUrl: './movie-list.component.html',
   imports: [CommonModule,MovieDetailsComponent],
-  styleUrls: ['./movie-list.component.css']
+  styleUrls: ['./movie-list.component.css'],
 })
 export class MovieListComponent implements OnInit {
-  movies = <Movie[]>[];
+  movies: Movie[] = [];
 
-  constructor(private movieService: MovieService) {}
+  constructor(private movieService: MovieService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.movieService.getMovies().subscribe({
-      next: (data) => {
-        this.movies = data
-      },
-      error: (err) => console.error('Error cargando películas:', err)
+    this.loadMovies();
+  }
+
+  loadMovies(): void {
+    this.movieService.getMovies().subscribe((movies) => {
+      this.movies = movies;
     });
   }
 
-
-  removeMovie(index: number): void {
-    this.movies.splice(index, 1);
+  editMovie(movie: Movie): void {
+    this.movieService.updateMovie(movie);
+    // actualizar en memoria sin recargar la API
+    const index = this.movies.findIndex(m => m.id === movie.id);
+    if (index !== -1) {
+      this.movies[index] = movie;
+    }
   }
 
-  updateMovie(event: any): void {
-    console.log(event)
-    this.movies[event.index] = event.data;
+  deleteMovie(index: number): void {
+    const movieId = this.movies[index].id
+    this.movieService.deleteMovie(movieId);
+    // eliminar en memoria sin recargar la API
+    this.movies = this.movies.filter(m => m.id !== movieId);
   }
 }
