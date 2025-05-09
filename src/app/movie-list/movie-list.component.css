@@ -1,0 +1,8 @@
+.movies-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}

@@ -1,0 +1,37 @@
+// @import '~@angular/material/theming';//notice that the file imported is also different
+// @include mat-core();
+
+// // Definir una paleta de colores
+// $my-primary: mat.define-palette(mat.$indigo-palette);
+// $my-accent: mat.define-palette(mat.$pink-palette);
+
+// // Crear un tema usando las paletas definidas
+// $my-theme: mat.define-light-theme((
+//   color: (
+//     primary: $my-primary,
+//     accent: $my-accent,
+//   ),
+// ));
+
+// // Incluir el tema en todos los componentes de Material
+// @include mat.all-component-themes($my-theme);
+
+
+// Estilos base
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  height: 100%;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 1rem;
+}

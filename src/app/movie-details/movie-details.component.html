@@ -1,0 +1,23 @@
+<mat-card class="movie-card">
+  <img mat-card-image [src]="movie.primaryImage" alt="{{ movie.primaryTitle }}">
+  <mat-card-header>
+    <mat-card-title>{{ movie.primaryTitle }}</mat-card-title>
+    <mat-card-subtitle>{{ movie.originalTitle }} ({{ movie.startYear }})</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>{{ movie.description }}</p>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="onEdit()">
+        <mat-icon>edit</mat-icon> <span>Editar</span>
+      </button>
+      <button mat-menu-item (click)="onDelete()">
+        <mat-icon>delete</mat-icon> <span>Eliminar</span>
+      </button>
+    </mat-menu>
+  </mat-card-actions>
+</mat-card>
