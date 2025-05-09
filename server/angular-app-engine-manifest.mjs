@@ -1,6 +1,6 @@
 
 export default {
-  basePath: 'https://LAxBANDA.github.io/angular-crud',
+  basePath: '/angular-crud',
   supportedLocales: {
   "en-US": ""
 },
